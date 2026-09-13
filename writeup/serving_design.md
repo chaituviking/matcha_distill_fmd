@@ -10,7 +10,7 @@ text ─► [frontend] ─► [AR LM] ─► speech tokens ─► [flow decoder]
                                                     │                        │
                                           distilled: N steps → 1    fixed cost, doesn't
                                           ~30x cheaper decoder      shrink with NFE →
-                                          (RTF 0.095 → 0.003)       floors total RTF ~0.12
+                                          (RTF 0.083 → 0.003)       floors total RTF ~0.11
 ```
 
 ## Latency and streaming
@@ -46,9 +46,9 @@ saturated scheduler shows up as requests waiting in the queue while the GPU stil
 looks under-used.
 
 The vocoder is the next bottleneck, and I know that from the numbers, not a guess.
-Once the decoder drops below NFE 4 the total RTF floors around 0.12, and at
+Once the decoder drops below NFE 4 the total RTF floors around 0.11, and at
 student@1 the decoder is only about 3% of the synthesis time (decoder RTF 0.003
-against a total of 0.116), so HiFi-GAN is basically all of it. So the follow-on
+against a total of 0.110), so HiFi-GAN is basically all of it. So the follow-on
 work is the vocoder, roughly in this order: first a lighter or iSTFT-style vocoder
 (predict magnitude and phase at frame rate and let a fixed inverse transform do
 the upsampling, which drops the transposed-conv stack), then INT8 quantization of

@@ -19,8 +19,8 @@ Two things I'd point at first:
   it to real data. The held-out check below shows the one-step student tracks
   the teacher at ~0.98 mel cosine.
 - **The decoder win is capped by the vocoder.** The one-step student cuts
-  decoder cost ~30× (decoder RTF ~0.095 → 0.003), but total RTF only drops to
-  ~0.12, because HiFi-GAN is a fixed cost that dominates once the decoder is
+  decoder cost ~30× (decoder RTF ~0.083 → 0.003), but total RTF only drops to
+  ~0.11, because HiFi-GAN is a fixed cost that dominates once the decoder is
   below ~NFE 4. So the next thing to optimize is the vocoder, not the decoder.
   This drives the serving write-up (`writeup/serving_design.md`).
 
@@ -72,7 +72,7 @@ Outputs go to `results/`: `table.md`, `rtf_vs_nfe.png`, a few sample wavs in
 12 prompts, laptop CPU (arm64), torch 2.14. The table below is one
 representative run — cost columns are wall-clock and jitter ±10-15% between runs
 on a shared CPU, so the stable numbers are the RTF *ratios* (~30× decoder,
-~0.12 total floor). `results/table.md` holds the latest run.
+~0.11 total floor). `results/table.md` holds the latest run.
 
 ![decoder RTF vs NFE](results/rtf_vs_nfe.png)
 
@@ -80,22 +80,22 @@ on a shared CPU, so the stable numbers are the RTF *ratios* (~30× decoder,
 
 | config | NFE | params (M) | decoder s/utt | per-NFE ms | decoder RTF | total RTF | peak RSS (MB, CPU)* |
 |---|---|---|---|---|---|---|---|
-| teacher@32 | 32 | 11.0 | 0.475 | 14.8 | 0.0951 | 0.2231 | 1575 |
-| teacher@16 | 16 | 11.0 | 0.205 | 12.8 | 0.0412 | 0.1625 | 1767 |
-| teacher@8 | 8 | 11.0 | 0.102 | 12.7 | 0.0204 | 0.1332 | 1558 |
-| teacher@4 | 4 | 11.0 | 0.052 | 13.1 | 0.0105 | 0.1304 | 1558 |
-| teacher@2 | 2 | 11.0 | 0.026 | 13.0 | 0.0052 | 0.1154 | 1692 |
-| student@1 | 1 | 11.0 | 0.016 | 16.4 | 0.0033 | 0.1162 | 1693 |
-| student@2 | 2 | 11.0 | 0.030 | 14.9 | 0.0060 | 0.1258 | 1720 |
-| student@4 | 4 | 11.0 | 0.054 | 13.4 | 0.0108 | 0.1293 | 1544 |
+| teacher@32 | 32 | 11.0 | 0.413 | 12.9 | 0.0828 | 0.2144 | 1767 |
+| teacher@16 | 16 | 11.0 | 0.200 | 12.5 | 0.0401 | 0.1560 | 1748 |
+| teacher@8 | 8 | 11.0 | 0.100 | 12.6 | 0.0201 | 0.1314 | 1872 |
+| teacher@4 | 4 | 11.0 | 0.051 | 12.6 | 0.0101 | 0.1193 | 1473 |
+| teacher@2 | 2 | 11.0 | 0.026 | 12.8 | 0.0051 | 0.1134 | 1755 |
+| student@1 | 1 | 11.0 | 0.014 | 13.7 | 0.0028 | 0.1104 | 1720 |
+| student@2 | 2 | 11.0 | 0.026 | 13.0 | 0.0052 | 0.1128 | 1600 |
+| student@4 | 4 | 11.0 | 0.052 | 13.0 | 0.0104 | 0.1197 | 1731 |
 
 \* peak process RSS during decode, a CPU stand-in for peak VRAM (torch's
 allocator caches freed memory, so later configs can look cheaper). Params are
 identical across rows by design.
 
-Per-NFE cost is a flat ~13-15 ms (same net per call), so the win is entirely
+Per-NFE cost is a flat ~13 ms (same net per call), so the win is entirely
 from fewer steps: student@1 is ~30× cheaper on the decoder than teacher@32.
-Total RTF floors at ~0.12 because the vocoder takes over below NFE 4 —
+Total RTF floors at ~0.11 because the vocoder takes over below NFE 4 —
 student@1's total is basically tied with teacher@2's.
 
 ### Quality (teacher rows real; student rows are pipeline verification only)
