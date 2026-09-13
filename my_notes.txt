@@ -11,10 +11,10 @@ The loss had a bug i caught. i had the stopgrad target and the trainable student
 which means the real data anchor was training nothing and the loss still went down so it looked fine. Fixed it by putting the student on the noisier point and the frozen EMA on the
 one nearer the data and the trust flows back from the boundary. This is the thing to explain first, it shows i actually get the objective.
 
-Decoder win is real but limits by the vocoder. One step is about 30 times cheaper on the decoder but total RTF only drops to 0.12 because HiFiGAN is a fixed cost that doesnt
+Decoder win is real but limits by the vocoder. One step is about 30 times cheaper on the decoder but total RTF only drops to 0.11 because HiFiGAN is a fixed cost that doesnt
 shrink with steps, so below NFE 4 the decoder isnt where the time goes anymore. Next thing to optimize is the vocoder not the decoder.
 
-and when we get into numbers one run on cpu per NFE flat nearly 13 to 15ms. held out check, student one-step is 0.98 cosine to the teacher's full solve, margin over a plain euler jump is
+and when we get into numbers one run on cpu per NFE flat nearly 13ms. held out check, student one-step is 0.98 cosine to the teacher's full solve, margin over a plain euler jump is
 tiny +0.0009 which is right because untrained. teacher WER flat across NFE while speaker cosine drops 0.996 to 0.961, so gate on speaker sim and a human listen not WER.
 
 Listened to the hinglish line instead of just reading WER. It's an american voice saying hindi phonetically arre bhai comes out like are by. Can't code-switch, LJSpeech is one
