@@ -1,4 +1,4 @@
-# distill-fmd — consistency distillation of a flow-matching TTS decoder
+# Matcha distill-fmd — consistency distillation of a flow-matching TTS decoder
 
 Distills Matcha-TTS's flow-matching mel decoder into a one-step student and
 measures the cost/quality trade against the teacher. The efficiency axis is NFE
@@ -6,28 +6,6 @@ measures the cost/quality trade against the teacher. The efficiency axis is NFE
 the teacher, so params and memory don't change and only the step count. Nothing
 is trained to convergence (not required for this task); one optimizer step
 runs, and the harness reports the numbers.
-
-
-## Decisions
-
-**Matcha, not CosyVoice 2.** Same substrate (an OT-CFM mel decoder, Euler-solved
-at inference, HiFi-GAN vocoded), but pip-installable with open weights, so the
-time went into the distillation and harness. The distillation only touches the
-teacher through `velocity_field`, `trajectory_point`, and `encode`, so swapping
-in another decoder means reimplementing those three. (I did later try CosyVoice 2
-as a second teacher, writeup and numbers in `cosy_exp/`.)
-
-**NFE, not parameters.** Sampling steps dominate decoder latency, so cutting
-32→1 attacks the main cost. The student reuses the teacher's architecture, so
-params and peak memory are unchanged by design and the win is step count only.
-
-**Consistency distillation.** Cheap per step (one teacher Euler step + two
-student forwards, no full ODE solves in the loop, no multi-round schedule), it
-gives a one-step sampler with a multistep knob to buy quality back at NFE 2–4,
-and the boundary condition is exact by construction (`c_skip=1, c_out=1-t`, no
-penalty term). Initializing from teacher weights means at step 0 the student is
-"teacher extrapolated one Euler step to the endpoint," so training only has to
-fix trajectory curvature.
 
 ## How to run
 
