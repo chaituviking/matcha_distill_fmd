@@ -7,9 +7,9 @@ and why Matcha remains the substrate for the distillation itself.
 
 All numbers are CPU (arm64 laptop), measured by `eval_harness.py` over the same
 12 prompts. The Matcha numbers come from the main repo (`results/table.md`). The
-CosyVoice run and its code live in the separate experiment folder
-`distill-fmd(cosyvoice)/` (`teacher_cosyvoice.py`, and
-`results_cosyvoice/table.md` from `eval_harness.py --teacher cosyvoice`, cost
+CosyVoice run and its code live in a separate experiment folder
+`distill-fmd(cosyvoice)/` that is NOT part of this repo (`teacher_cosyvoice.py`,
+and `results_cosyvoice/table.md` from `eval_harness.py --teacher cosyvoice`, cost
 only — see the quality caveat below). `cosy_notes.txt` here is the short version.
 
 ## Cost — the decoder that gets distilled
@@ -70,8 +70,8 @@ calls it as `estimator(x, mask, mu, t, None)` — i.e. it supplies only `x` and
 
   Bridging this needs `spks`/`cond` to flow through the `Cond` object and the
   student call — i.e. edits to the frozen `student.py`/`losses.py`. **That is
-  the concrete "extraction cost" the project README refers to**, now measured
-  rather than asserted.
+  the concrete cost of using CosyVoice as the teacher** — measured here rather
+  than just asserted, which is why the main repo stays on Matcha.
 
 ## Quality — not reported per-NFE for CosyVoice (and why)
 

@@ -4,7 +4,7 @@ much. It loads and synthesizes fine, the catch is the flow decoder isnt standalo
 once and hooked the decoder to grab and cache what it receives, then i never touch the LM again.
 
 The real wall is the channels. their estimator wants 320 because it packs x and mu and spks and cond, my student only sends x and mu so 160, it fails at the first conv. so
-this isnt a teacher swap, its changes to the student and the loss which are the frozen files, and that is exactly the extraction cost the readme talks about, now a number
+this isnt a teacher swap, its changes to the student and the loss which are the frozen files, and that is the real cost of using cosyvoice as the teacher, now a number
 not a claim. measured it anyway while i was there, 71M params vs matcha 11M, roughly 40 times times more per NFE, decoder RTF 0.74 at NFE 32 so slower than real time on cpu.
 
 one honest thing, i dont report cosyvoice quality per NFE. my decode there is a simple euler loop just to time the estimator, its not their real sampler (CFG, cosine schedule,

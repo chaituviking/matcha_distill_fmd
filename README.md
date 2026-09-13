@@ -31,7 +31,7 @@ at inference, HiFi-GAN vocoded), but pip-installable with open weights, so the
 time went into the distillation and harness. The distillation only touches the
 teacher through `velocity_field`, `trajectory_point`, and `encode`, so swapping
 in another decoder means reimplementing those three. (I did later try CosyVoice 2
-as a second teacher — see `distill-fmd(cosyvoice)/`.)
+as a second teacher — writeup and numbers in `cosy_exp/`.)
 
 **NFE, not parameters.** Sampling steps dominate decoder latency, so cutting
 32→1 attacks the main cost. The student reuses the teacher's architecture, so
