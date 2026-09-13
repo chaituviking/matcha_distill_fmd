@@ -26,3 +26,6 @@ so probably, at this stage matcha tts is good and i'll try the cosyvoice again w
 
 so the core idea is to build a cheaper decoder that ships, cut the steps not the model, keep it honest about what actually ran versus what needs compute, and prove it moves
 in the right direction before claiming any win.
+
+so, at last the final run: the whole pipeline runs end to end on cpu, one step is clean and the smoke loss drops nearly 67%, student one-step is nealry 30 times cheaper on the decoder (total RTF floors
+nearly 0.11 at the vocoder) and still 0.98 cosine to the teacher's full solve on held out prompts. so it works and measures what it should, just not trained.
