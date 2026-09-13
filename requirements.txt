@@ -1,0 +1,12 @@
+# Verified on Python 3.11.x, macOS arm64, CPU only.
+# System requirement (not pip): espeak-ng  (brew install espeak-ng / apt install espeak-ng)
+matcha-tts==0.0.7.2
+torch==2.14.0
+torchaudio==2.11.0
+faster-whisper==1.2.1
+speechbrain==1.1.1
+jiwer==4.0.0
+matplotlib==3.11.1
+soundfile==0.14.0
+psutil==7.2.2
+numpy==1.26.4

@@ -1,0 +1,10 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Downloaded model cache pulled by the harness (not a source artifact)
+results/.ecapa/
+
+# Keep results/ (table.md, rtf_vs_nfe.png, audio/, transcripts/) tracked —
+# they are the deliverable's evidence.

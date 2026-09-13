@@ -1,0 +1,28 @@
+
+Started on CosyVoice since the assignment mentions that. Their flow decoder is not standalone though, it wants conditioning the LM stage makes, so I sticked to it during a
+normal run and cached what it receives and then hit it the actual wall, their estimator is 320 channels because it packs x and mu and spks and cond, my student only sends x and
+mu so 160, fails at the first conv and filling that is not a teacher swap, it's changes to the student and the loss and measured it anyway while i was in there, 71M params versus
+matcha's 11M and alomst 40 times more per NFE, slower than real time on cpu. So matcha for the distillation and cosyvoice stays as the cost reference.
+
+The whole idea is just teacher should teach the student and the student gains the teachings from the teacher, here the teacher is the slow many-step decoder and the student
+learns to reach the same answer in one step, self-distillation so the teacher makes its own targets and the student matches them.
+
+The loss had a bug i caught. i had the stopgrad target and the trainable student swapped. At t=1 the boundary makes c out zero so the student output there has no gradient,
+which means the real data anchor was training nothing and the loss still went down so it looked fine. Fixed it by putting the student on the noisier point and the frozen EMA on the
+one nearer the data and the trust flows back from the boundary. This is the thing to explain first, it shows i actually get the objective.
+
+Decoder win is real but limits by the vocoder. One step is about 30 times cheaper on the decoder but total RTF only drops to 0.12 because HiFiGAN is a fixed cost that doesnt
+shrink with steps, so below NFE 4 the decoder isnt where the time goes anymore. Next thing to optimize is the vocoder not the decoder.
+
+and when we get into numbers one run on cpu per NFE flat nearly 13 to 15ms. held out check, student one-step is 0.98 cosine to the teacher's full solve, margin over a plain euler jump is
+tiny +0.0009 which is right because untrained. teacher WER flat across NFE while speaker cosine drops 0.996 to 0.961, so gate on speaker sim and a human listen not WER.
+
+Listened to the hinglish line instead of just reading WER. It's an american voice saying hindi phonetically arre bhai comes out like are by. Can't code-switch, LJSpeech is one
+speaker accent is in the data which is training dataset for matchatts. Teacher limitation not a distillation one,but accent is fine detail and that's what low NFE smooths first, so it's the slice that
+degrades fastest and the gate scores it separately.
+
+so probably, at this stage matcha tts is good and i'll try the cosyvoice again with different setup later, on a gpu and extending the student to take the extra spks and cond so the
+320 channels line up, then it can actually be distilled.
+
+so the core idea is to build a cheaper decoder that ships, cut the steps not the model, keep it honest about what actually ran versus what needs compute, and prove it moves
+in the right direction before claiming any win.

@@ -1,0 +1,17 @@
+
+The assignment says mentioned on CosyVoice 2 so i tried it as a second teacher, not to replace matcha but to actually measure the cost of using it instead of just saying its too
+much. It loads and synthesizes fine, the catch is the flow decoder isnt standalone, it needs conditioning that the LM stage produces, so i ran a normal zero-shot synthesis
+once and hooked the decoder to grab and cache what it receives, then i never touch the LM again.
+
+The real wall is the channels. their estimator wants 320 because it packs x and mu and spks and cond, my student only sends x and mu so 160, it fails at the first conv. so
+this isnt a teacher swap, its changes to the student and the loss which are the frozen files, and that is exactly the extraction cost the readme talks about, now a number
+not a claim. measured it anyway while i was there, 71M params vs matcha 11M, roughly 40 times times more per NFE, decoder RTF 0.74 at NFE 32 so slower than real time on cpu.
+
+one honest thing, i dont report cosyvoice quality per NFE. my decode there is a simple euler loop just to time the estimator, its not their real sampler (CFG, cosine schedule,
+causal cache), so the audio is not representative, a quick check gave WER nearly 0.9 even at NFE 32 which is a sampler artefact not the model. cost timing is faithful, quality via
+that path isnt.
+
+so matcha stays the teacher for the distillation, cosyvoice stays as the cost reference for what production actually looks like. next time on a gpu i extend the student to take
+spks and cond so the 320 line up and then it can really be distilled.
+
+model_compare.md here has the full side by side numbers.
